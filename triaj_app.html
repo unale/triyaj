@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Triaj">
+<title>Triaj Veri Girişi</title>
+<style>
+:root{
+  --blue:#1F4E79;--blue-mid:#2E75B6;--blue-light:#DEEAF1;
+  --green:#375623;--green-mid:#2E7D32;--green-light:#E2EFDA;
+  --red:#8B0000;--red-light:#FCE4D6;
+  --amber:#7B4700;--amber-light:#FFF2CC;
+  --slate:#37474F;--slate-light:#ECEFF1;
+  --gray:#555;--gray-light:#F5F5F5;
+  --border:#DDD;--radius:12px;
+  --font:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:var(--font);background:#F0F4F8;min-height:100vh;}
+
+/* ── topbar ── */
+.topbar{background:var(--blue);color:#fff;padding:14px 16px 12px;
+  display:flex;align-items:center;gap:10px;position:sticky;top:0;z-index:100;
+  box-shadow:0 2px 8px rgba(0,0,0,.25);}
+.topbar h1{font-size:17px;font-weight:600;flex:1;}
+.badge{background:rgba(255,255,255,.2);border-radius:20px;padding:3px 10px;font-size:12px;}
+.icon-btn{background:rgba(255,255,255,.15);border:none;color:#fff;
+  padding:6px 12px;border-radius:8px;font-size:16px;cursor:pointer;min-height:36px;}
+
+/* ── screens ── */
+.screen{display:none;padding:16px;max-width:700px;margin:0 auto;}
+.screen.active{display:block;}
+
+/* ── cards ── */
+.card{background:#fff;border-radius:var(--radius);box-shadow:0 1px 4px rgba(0,0,0,.08);
+  margin-bottom:14px;overflow:hidden;}
+.card-header{padding:12px 16px;font-size:13px;font-weight:700;letter-spacing:.03em;color:#fff;}
+.card-body{padding:14px 16px;}
+.hdr-blue{background:var(--blue);}
+.hdr-green{background:var(--green);}
+.hdr-green2{background:var(--green-mid);}
+.hdr-red{background:var(--red);}
+.hdr-amber{background:var(--amber);}
+.hdr-slate{background:var(--slate);}
+.hdr-gray{background:#607D8B;}
+
+/* ── form fields ── */
+.field{margin-bottom:14px;}
+.field label{display:block;font-size:13px;font-weight:600;color:var(--gray);margin-bottom:6px;}
+.field input,.field select{width:100%;padding:12px 14px;border:1.5px solid var(--border);
+  border-radius:10px;font-size:16px;background:#fff;-webkit-appearance:none;color:#222;}
+.field input:focus,.field select:focus{outline:none;border-color:var(--blue-mid);
+  box-shadow:0 0 0 3px rgba(46,117,182,.15);}
+.field .hint{font-size:11px;color:#999;margin-top:4px;}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;}
+.row4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;}
+
+/* ── pills (real <button> for iOS reliability) ── */
+.pills{display:flex;gap:8px;flex-wrap:wrap;}
+.pill-btn{padding:10px 16px;border-radius:20px;font-size:14px;font-weight:600;
+  border:2px solid var(--border);background:#fff;cursor:pointer;color:var(--gray);
+  -webkit-appearance:none;min-height:44px;}
+.pill-btn:active{opacity:.7;}
+.pill-btn.sel-red{background:#FFD0D0;border-color:#CC0000;color:#CC0000;}
+.pill-btn.sel-yellow{background:var(--amber-light);border-color:var(--amber);color:var(--amber);}
+.pill-btn.sel-green{background:var(--green-light);border-color:var(--green);color:var(--green);}
+.pill-btn.sel-blue{background:var(--blue-light);border-color:var(--blue-mid);color:var(--blue);}
+.pill-btn.sel-amber{background:var(--amber-light);border-color:var(--amber);color:var(--amber);}
+.pill-btn.sel-gray{background:var(--gray-light);border-color:#888;color:#333;}
+
+/* ── toggle buttons ── */
+.toggle-row{display:flex;gap:8px;}
+.tog{flex:1;padding:12px;border:2px solid var(--border);border-radius:10px;
+  font-size:14px;font-weight:600;background:#fff;cursor:pointer;color:var(--gray);
+  -webkit-appearance:none;min-height:44px;}
+.tog.on-green{background:var(--green-light);border-color:var(--green);color:var(--green);}
+.tog.on-red{background:#FFD0D0;border-color:#CC0000;color:#CC0000;}
+.tog.off{background:var(--gray-light);border-color:#999;color:#666;}
+
+/* ── nurse grid ── */
+.nurse-grid{display:grid;grid-template-columns:90px 1fr 1fr 1fr;
+  gap:1px;background:var(--border);border-radius:10px;overflow:hidden;}
+.ng-cell{background:#fff;padding:10px;text-align:center;font-size:13px;}
+.ng-cell.hdr{background:var(--slate-light);font-weight:700;color:var(--slate);font-size:12px;}
+.ng-cell.lbl{font-weight:600;color:var(--gray);text-align:left;padding-left:12px;}
+.ng-cell input[type=radio]{width:24px;height:24px;cursor:pointer;accent-color:var(--blue);}
+.consensus-box{margin-top:10px;padding:12px 14px;border-radius:10px;
+  background:var(--slate-light);font-size:15px;font-weight:700;color:var(--slate);}
+
+/* ── NEWS2 box ── */
+.news2-box{background:var(--blue-light);border:2px solid var(--blue-mid);
+  border-radius:12px;padding:14px;text-align:center;margin-bottom:10px;}
+.news2-num{font-size:40px;font-weight:700;color:var(--blue);}
+.news2-lbl{font-size:12px;color:var(--blue-mid);margin-top:2px;}
+.news2-risk{font-size:13px;font-weight:700;margin-top:6px;padding:4px 14px;
+  border-radius:20px;display:inline-block;}
+
+/* ── progress bar ── */
+.progress-wrap{background:#fff;border-radius:var(--radius);padding:14px 16px;
+  margin-bottom:14px;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.progress-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;}
+.progress-title{font-size:13px;font-weight:700;color:var(--blue);}
+.progress-count{font-size:14px;font-weight:700;color:var(--blue);}
+.progress-track{height:16px;background:#E8EFF5;border-radius:8px;overflow:hidden;}
+.progress-fill{height:100%;border-radius:8px;transition:width .4s ease;
+  background:linear-gradient(90deg,var(--blue-mid),var(--green-mid));}
+.progress-sub{font-size:11px;color:#888;margin-top:6px;display:flex;gap:12px;flex-wrap:wrap;}
+.progress-sub span{white-space:nowrap;}
+
+/* ── action buttons ── */
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;}
+.act-btn{background:#fff;border-radius:14px;padding:20px 16px;text-align:center;
+  cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,.1);border:2px solid transparent;
+  -webkit-appearance:none;width:100%;}
+.act-btn:active{transform:scale(.97);}
+.act-icon{font-size:32px;margin-bottom:8px;}
+.act-lbl{font-size:14px;font-weight:700;color:#333;}
+.act-sub{font-size:11px;color:#888;margin-top:2px;}
+
+/* ── stats ── */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.stat-box{background:#fff;border-radius:10px;padding:10px 6px;text-align:center;
+  box-shadow:0 1px 3px rgba(0,0,0,.07);}
+.stat-n{font-size:22px;font-weight:700;}
+.stat-l{font-size:10px;color:#888;margin-top:2px;}
+
+/* ── patient cards ── */
+.pat-card{background:#fff;border-radius:12px;padding:12px 14px;margin-bottom:10px;
+  box-shadow:0 1px 3px rgba(0,0,0,.08);display:flex;align-items:center;gap:10px;}
+.pat-main{display:flex;align-items:center;gap:10px;flex:1;cursor:pointer;min-height:44px;}
+.p-badge{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;
+  justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0;}
+.p-info{flex:1;}
+.p-id{font-weight:700;font-size:15px;color:#222;}
+.p-meta{font-size:12px;color:#888;margin-top:2px;}
+.p-status{font-size:11px;font-weight:600;padding:3px 8px;border-radius:20px;flex-shrink:0;}
+.st-wait{background:var(--amber-light);color:var(--amber);}
+.st-done{background:var(--green-light);color:var(--green);}
+.del-btn{background:var(--red-light);color:var(--red);border:none;border-radius:8px;
+  padding:8px 10px;font-size:16px;cursor:pointer;flex-shrink:0;min-height:44px;min-width:44px;
+  -webkit-appearance:none;}
+.del-btn:active{opacity:.7;}
+
+/* ── main buttons ── */
+.btn{width:100%;padding:16px;border:none;border-radius:12px;font-size:16px;
+  font-weight:700;cursor:pointer;margin-top:8px;min-height:52px;-webkit-appearance:none;}
+.btn-primary{background:var(--blue);color:#fff;}
+.btn-green{background:var(--green);color:#fff;}
+.btn-amber{background:var(--amber);color:#fff;}
+.btn-outline{background:#fff;color:var(--blue);border:2px solid var(--blue);}
+.btn:active{opacity:.8;}
+
+/* ── toast ── */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  background:#222;color:#fff;padding:12px 20px;border-radius:20px;font-size:14px;
+  font-weight:600;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;
+  white-space:nowrap;max-width:90vw;}
+.toast.show{opacity:1;}
+
+.empty-state{text-align:center;padding:40px 24px;color:#999;}
+.empty-icon{font-size:48px;margin-bottom:12px;}
+.sec-title{font-size:12px;font-weight:700;color:#888;text-transform:uppercase;
+  letter-spacing:.06em;margin-bottom:10px;}
+.divider{height:1px;background:var(--border);margin:16px 0;}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <h1 id="topbar-title">Triaj Doğruluk Çalışması</h1>
+  <span class="badge" id="topbar-badge"></span>
+  <button class="icon-btn" onclick="openSettings()">⚙️</button>
+</div>
+<div class="toast" id="toast"></div>
+
+<!-- ═══════════ HOME ═══════════ -->
+<div class="screen active" id="screen-home">
+
+  <!-- İlerleme çubuğu -->
+  <div class="progress-wrap">
+    <div class="progress-header">
+      <span class="progress-title">Kayıt İlerlemesi</span>
+      <span class="progress-count" id="prog-count">0 / 1320</span>
+    </div>
+    <div class="progress-track"><div class="progress-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="progress-sub" id="prog-sub"></div>
+  </div>
+
+  <!-- İstatistik kutuları -->
+  <div class="stats">
+    <div class="stat-box"><div class="stat-n" id="s-total" style="color:var(--blue)">0</div><div class="stat-l">Toplam</div></div>
+    <div class="stat-box"><div class="stat-n" id="s-walk"  style="color:var(--blue-mid)">0</div><div class="stat-l">Ayaktan</div></div>
+    <div class="stat-box"><div class="stat-n" id="s-amb"   style="color:var(--amber)">0</div><div class="stat-l">Ambulans</div></div>
+    <div class="stat-box"><div class="stat-n" id="s-done"  style="color:var(--green)">0</div><div class="stat-l">T₂₄ tam</div></div>
+  </div>
+
+  <!-- Aksiyon butonları -->
+  <div class="action-grid">
+    <button class="act-btn" style="border-color:var(--blue-mid)" onclick="showT0Form()">
+      <div class="act-icon">📋</div><div class="act-lbl">Yeni T₀</div><div class="act-sub">Triaj anı kaydı</div>
+    </button>
+    <button class="act-btn" style="border-color:var(--amber)" onclick="showSelectT24()">
+      <div class="act-icon">🕐</div><div class="act-lbl">T₂₄ Gir</div><div class="act-sub">24 saat sonuç</div>
+    </button>
+    <button class="act-btn" style="border-color:var(--green)" onclick="exportCSV()">
+      <div class="act-icon">📥</div><div class="act-lbl">CSV İndir</div><div class="act-sub">Tüm veriler</div>
+    </button>
+    <button class="act-btn" style="border-color:#607D8B" onclick="openSettings()">
+      <div class="act-icon">⚙️</div><div class="act-lbl">Ayarlar</div><div class="act-sub">Hedef, kod, tarih</div>
+    </button>
+  </div>
+
+  <div class="sec-title">Hastalar</div>
+  <div id="patient-list"></div>
+</div>
+
+<!-- ═══════════ T₀ FORM ═══════════ -->
+<div class="screen" id="screen-t0">
+
+  <div class="card">
+    <div class="card-header hdr-blue">Kimlik</div>
+    <div class="card-body">
+      <div class="row2">
+        <div class="field"><label>Hasta Kodu</label>
+          <input type="text" id="t0-kod" placeholder="A4-0001" autocomplete="off" autocorrect="off" autocapitalize="characters"></div>
+        <div class="field"><label>Saat</label><input type="time" id="t0-saat"></div>
+      </div>
+      <div class="field"><label>Kohort</label>
+        <div class="pills" id="pills-kohort">
+          <button type="button" class="pill-btn" data-val="Ayaktan"  data-group="kohort" data-color="blue">🚶 Ayaktan</button>
+          <button type="button" class="pill-btn" data-val="Ambulans" data-group="kohort" data-color="amber">🚑 Ambulans</button>
+        </div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>Yaş (yıl)</label>
+          <input type="number" id="t0-yas" inputmode="numeric" min="18" max="120" placeholder="—" autocomplete="off"></div>
+        <div class="field"><label>Cinsiyet</label>
+          <div class="pills" id="pills-cinsiyet">
+            <button type="button" class="pill-btn" data-val="Kadın"  data-group="cinsiyet" data-color="blue">♀ Kadın</button>
+            <button type="button" class="pill-btn" data-val="Erkek"  data-group="cinsiyet" data-color="gray">♂ Erkek</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header hdr-blue">Başvuru</div>
+    <div class="card-body">
+      <div class="field"><label>Şikayet 1</label>
+        <select id="t0-sik1" onchange="onDiger('t0-sik1','t0-sik1x')">
+          <option value="">Seçin…</option>
+          <optgroup label="Kardiyovasküler">
+            <option>Göğüs ağrısı</option><option>Çarpıntı / ritim bozukluğu</option></optgroup>
+          <optgroup label="Solunum">
+            <option>Nefes darlığı</option></optgroup>
+          <optgroup label="Nöroloji">
+            <option>Bilinç değişikliği / konfüzyon</option><option>Baş ağrısı</option>
+            <option>Nöbet / konvülsiyon</option><option>Baş dönmesi / senkop</option></optgroup>
+          <optgroup label="Karın">
+            <option>Karın ağrısı</option><option>Bulantı / kusma</option>
+            <option>GI kanama (hematemez / melena)</option></optgroup>
+          <optgroup label="Kas-İskelet / Travma">
+            <option>Travma</option><option>Ekstremite şikayeti</option>
+            <option>Sırt / bel ağrısı</option></optgroup>
+          <optgroup label="Enfeksiyon">
+            <option>Ateş / enfeksiyon</option></optgroup>
+          <optgroup label="Ürogenital">
+            <option>İdrar yolu şikayeti</option><option>Gebelik komplikasyonu</option></optgroup>
+          <optgroup label="Diğer">
+            <option>Alerjik reaksiyon / anafilaksi</option>
+            <option>Zehirlenme / intoksikasyon</option>
+            <option>Psikiyatrik şikayet</option><option>KBB şikayeti</option>
+            <option>Cilt / döküntü</option>
+            <option>Genel halsizlik / düşme</option><option>Diğer</option></optgroup>
+        </select>
+        <input type="text" id="t0-sik1x" placeholder="Şikayeti yazın…" style="display:none;margin-top:8px" autocorrect="off">
+      </div>
+      <div class="field"><label>Şikayet 2 <span style="font-weight:400;color:#aaa">(yoksa boş)</span></label>
+        <select id="t0-sik2" onchange="onDiger('t0-sik2','t0-sik2x')">
+          <option value="">—</option>
+          <optgroup label="Kardiyovasküler">
+            <option>Göğüs ağrısı</option><option>Çarpıntı / ritim bozukluğu</option></optgroup>
+          <optgroup label="Solunum"><option>Nefes darlığı</option></optgroup>
+          <optgroup label="Nöroloji">
+            <option>Bilinç değişikliği / konfüzyon</option><option>Baş ağrısı</option>
+            <option>Nöbet / konvülsiyon</option><option>Baş dönmesi / senkop</option></optgroup>
+          <optgroup label="Karın">
+            <option>Karın ağrısı</option><option>Bulantı / kusma</option>
+            <option>GI kanama (hematemez / melena)</option></optgroup>
+          <optgroup label="Kas-İskelet / Travma">
+            <option>Travma</option><option>Ekstremite şikayeti</option>
+            <option>Sırt / bel ağrısı</option></optgroup>
+          <optgroup label="Enfeksiyon"><option>Ateş / enfeksiyon</option></optgroup>
+          <optgroup label="Ürogenital">
+            <option>İdrar yolu şikayeti</option><option>Gebelik komplikasyonu</option></optgroup>
+          <optgroup label="Diğer">
+            <option>Alerjik reaksiyon / anafilaksi</option>
+            <option>Zehirlenme / intoksikasyon</option>
+            <option>Psikiyatrik şikayet</option><option>KBB şikayeti</option>
+            <option>Cilt / döküntü</option>
+            <option>Genel halsizlik / düşme</option><option>Diğer</option></optgroup>
+        </select>
+        <input type="text" id="t0-sik2x" placeholder="Şikayeti yazın…" style="display:none;margin-top:8px" autocorrect="off">
+      </div>
+      <div class="field"><label>Komorbidite Yükü</label>
+        <div class="pills" id="pills-komor">
+          <button type="button" class="pill-btn" data-val="0"   data-group="komor" data-color="gray">0 — Yok</button>
+          <button type="button" class="pill-btn" data-val="1-2" data-group="komor" data-color="blue">1–2 tanı</button>
+          <button type="button" class="pill-btn" data-val="≥3"  data-group="komor" data-color="amber">≥3 tanı</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header hdr-green">Vital Bulgular (HIS'ten)</div>
+    <div class="card-body">
+      <div class="row3">
+        <div class="field"><label>Nabız (dk⁻¹)</label>
+          <input type="number" id="t0-nabiz" inputmode="numeric" oninput="schedNews2()"></div>
+        <div class="field"><label>Solunum Hz (dk⁻¹)</label>
+          <input type="number" id="t0-solhz" inputmode="numeric" oninput="schedNews2()"></div>
+        <div class="field"><label>SpO₂ (%)</label>
+          <input type="number" id="t0-spo2" inputmode="numeric" oninput="schedNews2()"></div>
+      </div>
+      <div class="row4">
+        <div class="field"><label>Sistolik KB</label>
+          <input type="number" id="t0-kbs" inputmode="numeric" oninput="schedNews2()"></div>
+        <div class="field"><label>Diyastolik KB</label>
+          <input type="number" id="t0-kbd" inputmode="numeric" placeholder="—"></div>
+        <div class="field"><label>Ateş (°C)</label>
+          <input type="number" id="t0-ates" step="0.1" inputmode="decimal" oninput="schedNews2()"></div>
+        <div class="field"><label>GKS (3–15)</label>
+          <input type="number" id="t0-gks" inputmode="numeric" min="3" max="15" placeholder="15"></div>
+      </div>
+      <div class="row2">
+        <div class="field"><label>AVPU</label>
+          <select id="t0-avpu" onchange="schedNews2()">
+            <option value="">Seç</option>
+            <option value="A">A — Alert</option>
+            <option value="V">V — Verbal</option>
+            <option value="P">P — Pain</option>
+            <option value="U">U — Unresponsive</option>
+          </select>
+        </div>
+        <div class="field"><label>Ek Oksijen</label>
+          <div class="toggle-row">
+            <button type="button" class="tog off" id="eko2-h" onclick="setTog('eko2','Hayır');schedNews2()">Hayır</button>
+            <button type="button" class="tog"     id="eko2-e" onclick="setTog('eko2','Evet');schedNews2()">Evet</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- NEWS2 otomatik -->
+  <div class="card">
+    <div class="card-header hdr-green2">NEWS2 — Otomatik</div>
+    <div class="card-body">
+      <div class="news2-box" id="news2-box">
+        <div class="news2-num" id="news2-num">—</div>
+        <div class="news2-lbl">NEWS2 Toplam / 20</div>
+        <div class="news2-risk" id="news2-risk" style="display:none"></div>
+      </div>
+      <div class="hint">Vital bulgulardan otomatik hesaplanır. Gerekirse aşağıdan düzeltin.</div>
+      <div class="field" style="margin-top:10px"><label>Manuel düzeltme (isteğe bağlı)</label>
+        <input type="number" id="t0-news2" inputmode="numeric" placeholder="Otomatik değeri geçersiz kıl" min="0" max="20">
+      </div>
+    </div>
+  </div>
+
+  <!-- Araştırmacı değerlendirmesi -->
+  <div class="card">
+    <div class="card-header hdr-green2">Araştırmacı Değerlendirmesi</div>
+    <div class="card-body">
+      <div class="field"><label>Re-triaj yapıldı mı? <span style="font-weight:400;color:#aaa">(HIS'te 2 triaj girişi var mı?)</span></label>
+        <div class="toggle-row">
+          <button type="button" class="tog off" id="retriaj-h" onclick="setTog('retriaj','Hayır')">Hayır</button>
+          <button type="button" class="tog"     id="retriaj-e" onclick="setTog('retriaj','Evet')">Evet</button>
+        </div>
+      </div>
+      <div class="field"><label>Araştırmacı ESI Skoru</label>
+        <div class="hint" style="margin-bottom:8px">Hemşire kararını GÖRMEDEN belirleyin</div>
+        <div class="pills" id="pills-esi">
+          <button type="button" class="pill-btn" data-val="1" data-group="esi" data-color="red"   style="min-width:56px">ESI 1</button>
+          <button type="button" class="pill-btn" data-val="2" data-group="esi" data-color="red"   style="min-width:56px">ESI 2</button>
+          <button type="button" class="pill-btn" data-val="3" data-group="esi" data-color="amber" style="min-width:56px">ESI 3</button>
+          <button type="button" class="pill-btn" data-val="4" data-group="esi" data-color="green" style="min-width:56px">ESI 4</button>
+          <button type="button" class="pill-btn" data-val="5" data-group="esi" data-color="green" style="min-width:56px">ESI 5</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Hemşire HIS — ayaktan -->
+  <div class="card" id="card-his">
+    <div class="card-header hdr-red">Hemşire Triaj — HIS (Ayaktan)</div>
+    <div class="card-body">
+      <div class="hint" style="margin-bottom:10px">ESI puanını kaydettikten SONRA HIS'e bakın</div>
+      <div class="pills" id="pills-his">
+        <button type="button" class="pill-btn" data-val="Kırmızı" data-group="his" data-color="red">🔴 Kırmızı</button>
+        <button type="button" class="pill-btn" data-val="Sarı"    data-group="his" data-color="yellow">🟡 Sarı</button>
+        <button type="button" class="pill-btn" data-val="Yeşil"   data-group="his" data-color="green">🟢 Yeşil</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Kör hemşire — ambulans -->
+  <div class="card" id="card-amb">
+    <div class="card-header hdr-slate">Kör Hemşire Triaj — Ambulans</div>
+    <div class="card-body">
+      <div class="hint" style="margin-bottom:12px">Hemşireler ambulansla geldiğini bilmeden vital + şikayet bilgisiyle triaj yapıyor</div>
+      <div class="nurse-grid">
+        <div class="ng-cell hdr"></div>
+        <div class="ng-cell hdr" style="color:#CC0000">Kırmızı</div>
+        <div class="ng-cell hdr" style="color:var(--amber)">Sarı</div>
+        <div class="ng-cell hdr" style="color:var(--green)">Yeşil</div>
+        <div class="ng-cell lbl">Hemşire 1</div>
+        <div class="ng-cell"><input type="radio" name="h1" value="Kırmızı" onchange="updateConsensus()"></div>
+        <div class="ng-cell"><input type="radio" name="h1" value="Sarı"    onchange="updateConsensus()"></div>
+        <div class="ng-cell"><input type="radio" name="h1" value="Yeşil"   onchange="updateConsensus()"></div>
+        <div class="ng-cell lbl">Hemşire 2</div>
+        <div class="ng-cell"><input type="radio" name="h2" value="Kırmızı" onchange="updateConsensus()"></div>
+        <div class="ng-cell"><input type="radio" name="h2" value="Sarı"    onchange="updateConsensus()"></div>
+        <div class="ng-cell"><input type="radio" name="h2" value="Yeşil"   onchange="updateConsensus()"></div>
+        <div class="ng-cell lbl">Hemşire 3</div>
+        <div class="ng-cell"><input type="radio" name="h3" value="Kırmızı" onchange="updateConsensus()"></div>
+        <div class="ng-cell"><input type="radio" name="h3" value="Sarı"    onchange="updateConsensus()"></div>
+        <div class="ng-cell"><input type="radio" name="h3" value="Yeşil"   onchange="updateConsensus()"></div>
+      </div>
+      <div class="consensus-box" id="consensus-display">Konsensüs: — (bekliyor)</div>
+    </div>
+  </div>
+
+  <button type="button" class="btn btn-primary" onclick="saveT0()">✅ T₀ Kaydını Kaydet</button>
+  <button type="button" class="btn btn-outline" style="margin-top:8px" onclick="showScreen('home')">İptal</button>
+  <div style="height:32px"></div>
+</div>
+
+<!-- ═══════════ T₂₄ FORM ═══════════ -->
+<div class="screen" id="screen-t24">
+  <div class="card">
+    <div class="card-header hdr-amber">T₂₄ — <span id="t24-kod-display"></span></div>
+    <div class="card-body">
+      <div class="row2">
+        <div class="field"><label>Çıkış Yeri</label>
+          <select id="t24-cikis">
+            <option value="">Seçin…</option>
+            <option>Taburcu</option><option>Servis yatışı</option>
+            <option>YBÜ yatışı</option><option>AS'de exitus</option>
+            <option>Başka kuruma nakil</option>
+          </select>
+        </div>
+        <div class="field"><label>AS Kalış (dakika)</label>
+          <input type="number" id="t24-kalis" inputmode="numeric" placeholder="180"></div>
+      </div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header hdr-red">Bileşik Olumsuz Sonuç Kriterleri</div>
+    <div class="card-body">
+      <div class="hint" style="margin-bottom:12px">Triaj renginden KÖR — HIS kayıtlarından doldurun</div>
+      <div id="cao-criteria"></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-header hdr-gray">Duyarlılık Analizi</div>
+    <div class="card-body" id="sens-criteria"></div>
+  </div>
+  <div class="card" id="cao-result-card" style="display:none">
+    <div class="card-body" style="text-align:center;padding:18px">
+      <div style="font-size:22px;font-weight:700" id="cao-result-txt"></div>
+      <div style="font-size:13px;color:#888;margin-top:4px" id="triaj-hata-txt"></div>
+    </div>
+  </div>
+  <button type="button" class="btn btn-amber" onclick="saveT24()">✅ T₂₄ Kaydını Kaydet</button>
+  <button type="button" class="btn btn-outline" style="margin-top:8px" onclick="showScreen('home')">İptal</button>
+  <div style="height:32px"></div>
+</div>
+
+<!-- ═══════════ SETTINGS ═══════════ -->
+<div class="screen" id="screen-settings">
+  <div class="card">
+    <div class="card-header hdr-gray">Ayarlar</div>
+    <div class="card-body">
+      <div class="field"><label>Başlangıç Hasta Kodu</label>
+        <input type="text" id="set-kod" placeholder="A4-0001" autocorrect="off" autocapitalize="characters"></div>
+      <div class="field"><label>Hedef Kayıt Sayısı</label>
+        <input type="number" id="set-hedef" inputmode="numeric" placeholder="1320"></div>
+      <div class="field"><label>Çalışma Tarihi</label>
+        <input type="date" id="set-tarih"></div>
+      <button type="button" class="btn btn-primary" onclick="saveSettings()">Kaydet</button>
+      <div class="divider"></div>
+      <button type="button" class="btn" style="background:#B71C1C;color:#fff" onclick="clearData()">⚠️ Tüm Verileri Sil</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// STATE & STORAGE
+// ══════════════════════════════════════════
+const S = {kohort:'',komor:'',esi:'',his:'',eko2:'Hayır',retriaj:'Hayır',konsensus:'',cinsiyet:''};
+let editKod = null, news2Timer = null;
+
+const CAO  = ['YBÜ Yatışı','Entübasyon','KPR','Kardiyoversiyon/Defibrilasyon',
+              'Tromboliz','Acil PKG/Cerrahi','Vazopressör/İnotropik','AS Mortalitesi'];
+const SENS = ['NIMV','Acil Hemodiyaliz/Diyaliz'];
+
+const getR   = ()=>{ try{return JSON.parse(localStorage.getItem('tr')||'[]');}catch{return[];} };
+const setR   = r=>localStorage.setItem('tr',JSON.stringify(r));
+const getSet = ()=>{ try{return JSON.parse(localStorage.getItem('trs')||'{}');}catch{return{};} };
+
+// ══════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════
+function showScreen(n){
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('screen-'+n).classList.add('active');
+  const T={home:'Triaj Doğruluk Çalışması',t0:'Yeni T₀',t24:'T₂₄ Sonuç',settings:'Ayarlar'};
+  document.getElementById('topbar-title').textContent=T[n]||'';
+  if(n==='home'){renderHome();}
+  if(n==='settings'){loadSettings();}
+}
+
+// ══════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════
+function renderHome(){
+  const recs=getR(), set=getSet();
+  const target=parseInt(set.hedef||'1320');
+  const walk=recs.filter(r=>r.kohort==='Ayaktan').length;
+  const amb=recs.filter(r=>r.kohort==='Ambulans').length;
+  const done=recs.filter(r=>r.t24).length;
+  const n=recs.length;
+  const pct=Math.min(100,Math.round(n/target*100));
+
+  document.getElementById('topbar-badge').textContent='n='+n;
+  document.getElementById('prog-count').textContent=`${n} / ${target}`;
+  document.getElementById('prog-fill').style.width=pct+'%';
+  document.getElementById('prog-sub').innerHTML=
+    `<span>%${pct} tamamlandı</span><span>Ayaktan: ${walk}</span><span>Ambulans: ${amb}</span><span>T₂₄ tam: ${done}</span>`;
+
+  document.getElementById('s-total').textContent=n;
+  document.getElementById('s-walk').textContent=walk;
+  document.getElementById('s-amb').textContent=amb;
+  document.getElementById('s-done').textContent=done;
+
+  const el=document.getElementById('patient-list');
+  if(!recs.length){
+    el.innerHTML='<div class="empty-state"><div class="empty-icon">📋</div><p>Kayıt yok. T₀ ile başlayın.</p></div>';
+    return;
+  }
+  el.innerHTML=[...recs].reverse().map(r=>{
+    const bc=r.kohort==='Ayaktan'?'var(--blue-mid)':'var(--amber)';
+    const bl=r.kohort==='Ayaktan'?'AY':'AM';
+    const hi=r.kohort==='Ayaktan'?`HIS:${r.his||'—'}`:`Kons:${r.konsensus||'—'}`;
+    const sc=r.t24?'st-done':'st-wait';
+    const st=r.t24?'✅':'⏳';
+    return `<div class="pat-card">
+      <div class="pat-main" onclick="openPat('${r.kod}')">
+        <div class="p-badge" style="background:${bc}">${bl}</div>
+        <div class="p-info">
+          <div class="p-id">${r.kod}</div>
+          <div class="p-meta">${r.saat||''} · ${r.sik1||'—'} · ${hi} · NEWS2:${r.news2||'—'}</div>
+        </div>
+        <span class="p-status ${sc}">${st} ${r.t24?'Tam':'T₂₄ bekle'}</span>
+      </div>
+      <button type="button" class="del-btn" onclick="deletePat('${r.kod}')" title="Sil">🗑️</button>
+    </div>`;
+  }).join('');
+}
+
+function openPat(kod){
+  const r=getR().find(x=>x.kod===kod);
+  if(!r)return;
+  if(!r.t24){startT24(kod);}else{showToast('Tamamlandı: '+kod);}
+}
+
+function deletePat(kod){
+  if(!confirm(`"${kod}" kaydını silmek istiyor musunuz?`))return;
+  const recs=getR().filter(r=>r.kod!==kod);
+  setR(recs);
+  showToast('🗑️ Silindi: '+kod);
+  renderHome();
+}
+
+// ══════════════════════════════════════════
+// PILL BUTTONS (iOS-safe delegated click)
+// ══════════════════════════════════════════
+document.addEventListener('click',function(e){
+  const btn=e.target.closest('.pill-btn');
+  if(!btn)return;
+  const group=btn.dataset.group, val=btn.dataset.val, color=btn.dataset.color;
+  if(!group)return;
+  document.querySelectorAll(`.pill-btn[data-group="${group}"]`).forEach(b=>b.className='pill-btn');
+  btn.className=`pill-btn sel-${color}`;
+  S[group]=val;
+  if(group==='kohort'){
+    const isAmb=val==='Ambulans';
+    document.getElementById('card-his').style.display=isAmb?'none':'block';
+    document.getElementById('card-amb').style.display=isAmb?'block':'none';
+  }
+});
+
+// ══════════════════════════════════════════
+// TOGGLES
+// ══════════════════════════════════════════
+function setTog(group,val){
+  const h=document.getElementById(group+'-h');
+  const e=document.getElementById(group+'-e');
+  if(val==='Hayır'){h.className='tog off';e.className='tog';}
+  else{h.className='tog';e.className='tog on-green';}
+  S[group]=val;
+}
+
+// ══════════════════════════════════════════
+// DİĞER
+// ══════════════════════════════════════════
+function onDiger(selId,inpId){
+  const v=document.getElementById(selId).value;
+  const inp=document.getElementById(inpId);
+  inp.style.display=v==='Diğer'?'block':'none';
+  if(v!=='Diğer')inp.value='';
+}
+
+// ══════════════════════════════════════════
+// NEWS2 (debounced oninput)
+// ══════════════════════════════════════════
+function schedNews2(){
+  clearTimeout(news2Timer);
+  news2Timer=setTimeout(calcNEWS2,300);
+}
+
+function calcNEWS2(){
+  const rr  =v=>{ if(!v&&v!==0)return null;v=+v;
+    if(v<=8)return 3;if(v<=11)return 1;if(v<=20)return 0;if(v<=24)return 2;return 3;};
+  const spo2=v=>{ if(!v&&v!==0)return null;v=+v;const sup=S.eko2==='Evet';
+    if(!sup){if(v<=91)return 3;if(v<=93)return 2;if(v<=95)return 1;return 0;}
+    else{if(v<=83)return 3;if(v<=85)return 2;if(v<=87)return 1;
+         if(v<=92)return 0;if(v<=94)return 1;if(v<=96)return 2;return 3;}};
+  const kb  =v=>{ if(!v&&v!==0)return null;v=+v;
+    if(v<=90)return 3;if(v<=100)return 2;if(v<=110)return 1;if(v<=219)return 0;return 3;};
+  const nbz =v=>{ if(!v&&v!==0)return null;v=+v;
+    if(v<=40)return 3;if(v<=50)return 1;if(v<=90)return 0;if(v<=110)return 1;if(v<=130)return 2;return 3;};
+  const avpu=v=>{ if(!v)return null;return v==='A'?0:3;};
+  const ats =v=>{ if(!v&&v!==0)return null;v=+v;
+    if(v<=35.0)return 3;if(v<=36.0)return 1;if(v<=38.0)return 0;if(v<=39.0)return 1;return 2;};
+  const eko2=S.eko2==='Evet'?2:0;
+
+  const g=id=>document.getElementById(id).value;
+  const parts=[
+    rr(g('t0-solhz')),spo2(g('t0-spo2')),kb(g('t0-kbs')),
+    nbz(g('t0-nabiz')),avpu(g('t0-avpu')),ats(g('t0-ates')),eko2
+  ];
+
+  const box=document.getElementById('news2-box');
+  const num=document.getElementById('news2-num');
+  const risk=document.getElementById('news2-risk');
+
+  if(parts.slice(0,6).some(x=>x===null)){
+    num.textContent='—';risk.style.display='none';
+    box.style.background='var(--blue-light)';box.style.borderColor='var(--blue-mid)';
+    num.style.color='var(--blue)';return;
+  }
+  const total=parts.reduce((a,b)=>a+b,0);
+  num.textContent=total;risk.style.display='inline-block';
+
+  if(total>=7){
+    box.style.background='#FFD0D0';box.style.borderColor='#CC0000';
+    num.style.color='#CC0000';
+    risk.textContent='⚠️ YÜKSEK RİSK (≥7)';risk.style.background='#FFD0D0';risk.style.color='#CC0000';
+  }else if(total>=5){
+    box.style.background='var(--amber-light)';box.style.borderColor='var(--amber)';
+    num.style.color='var(--amber)';
+    risk.textContent='⚡ Orta risk (5–6)';risk.style.background='var(--amber-light)';risk.style.color='var(--amber)';
+  }else{
+    box.style.background='var(--blue-light)';box.style.borderColor='var(--blue-mid)';
+    num.style.color='var(--blue)';
+    risk.textContent='✅ Düşük risk (<5)';risk.style.background='var(--blue-light)';risk.style.color='var(--blue)';
+  }
+}
+
+// ══════════════════════════════════════════
+// CONSENSUS
+// ══════════════════════════════════════════
+function updateConsensus(){
+  const vals=['h1','h2','h3'].map(n=>{
+    const c=document.querySelector(`input[name=${n}]:checked`);
+    return c?c.value:null;
+  });
+  const cnt={Kırmızı:0,Sarı:0,Yeşil:0};
+  vals.forEach(v=>{if(v)cnt[v]++;});
+  let con='Anlaşmazlık';
+  if(cnt['Kırmızı']>=2)con='Kırmızı';
+  else if(cnt['Sarı']>=2)con='Sarı';
+  else if(cnt['Yeşil']>=2)con='Yeşil';
+  S.konsensus=con;
+  const colors={'Kırmızı':'#CC0000','Sarı':'var(--amber)','Yeşil':'var(--green)','Anlaşmazlık':'#607D8B'};
+  const d=document.getElementById('consensus-display');
+  d.textContent='Konsensüs: '+con;
+  d.style.color=colors[con]||'#607D8B';
+}
+
+// ══════════════════════════════════════════
+// T₀ RESET & SAVE
+// ══════════════════════════════════════════
+function showT0Form(){resetT0();showScreen('t0');}
+
+function resetT0(){
+  Object.assign(S,{kohort:'',komor:'',esi:'',his:'',eko2:'Hayır',retriaj:'Hayır',konsensus:'',cinsiyet:''});
+  document.getElementById('t0-yas').value='';
+  const set=getSet(),recs=getR();
+  const base=set.startKod||'A4-0001';
+  const prefix=base.replace(/\d+$/,'');
+  const startNum=parseInt(base.match(/\d+$/)?.[0]||'1');
+  document.getElementById('t0-kod').value=prefix+String(startNum+recs.length).padStart(4,'0');
+  document.getElementById('t0-saat').value=new Date().toTimeString().slice(0,5);
+  ['t0-sik1','t0-sik2','t0-nabiz','t0-solhz','t0-spo2','t0-kbs','t0-kbd',
+   't0-ates','t0-gks','t0-avpu','t0-news2'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el.tagName==='SELECT')el.selectedIndex=0;else el.value='';
+  });
+  ['t0-sik1x','t0-sik2x'].forEach(id=>{
+    document.getElementById(id).style.display='none';
+    document.getElementById(id).value='';
+  });
+  document.querySelectorAll('.pill-btn').forEach(b=>b.className='pill-btn');
+  ['h1','h2','h3'].forEach(n=>document.querySelectorAll(`input[name=${n}]`).forEach(r=>r.checked=false));
+  setTog('eko2','Hayır');setTog('retriaj','Hayır');
+  document.getElementById('consensus-display').textContent='Konsensüs: — (bekliyor)';
+  document.getElementById('consensus-display').style.color='';
+  document.getElementById('news2-num').textContent='—';
+  document.getElementById('news2-risk').style.display='none';
+  document.getElementById('news2-box').style.background='var(--blue-light)';
+  document.getElementById('news2-box').style.borderColor='var(--blue-mid)';
+  document.getElementById('card-his').style.display='block';
+  document.getElementById('card-amb').style.display='none';
+}
+
+function saveT0(){
+  const kod=document.getElementById('t0-kod').value.trim();
+  if(!kod){showToast('⚠️ Hasta kodu boş');return;}
+  if(!S.kohort){showToast('⚠️ Kohort seçin');return;}
+  const recs=getR();
+  if(recs.find(r=>r.kod===kod)){showToast('⚠️ Kod var: '+kod);return;}
+  const isAmb=S.kohort==='Ambulans';
+  const sv=(selId,inpId)=>{
+    const v=document.getElementById(selId).value;
+    return v==='Diğer'?(document.getElementById(inpId).value||'Diğer'):v;
+  };
+  const news2Manual=document.getElementById('t0-news2').value;
+  const news2Auto=document.getElementById('news2-num').textContent;
+  const news2Final=news2Manual||(news2Auto!=='—'?news2Auto:'');
+  const rec={
+    kod, tarih:getSet().studyDate||new Date().toISOString().slice(0,10),
+    saat:document.getElementById('t0-saat').value,
+    kohort:S.kohort, yas:document.getElementById('t0-yas').value,
+    cinsiyet:S.cinsiyet,
+    sik1:sv('t0-sik1','t0-sik1x'), sik2:sv('t0-sik2','t0-sik2x'),
+    komor:S.komor,
+    nabiz:document.getElementById('t0-nabiz').value,
+    solhz:document.getElementById('t0-solhz').value,
+    spo2:document.getElementById('t0-spo2').value,
+    kbs:document.getElementById('t0-kbs').value,
+    kbd:document.getElementById('t0-kbd').value,
+    ates:document.getElementById('t0-ates').value,
+    gks:document.getElementById('t0-gks').value,
+    avpu:document.getElementById('t0-avpu').value,
+    eko2:S.eko2, news2:news2Final, retriaj:S.retriaj, esi:S.esi,
+    his:isAmb?'Kırmızı (protokol)':S.his,
+    h1:isAmb?(document.querySelector('input[name=h1]:checked')?.value||''):'',
+    h2:isAmb?(document.querySelector('input[name=h2]:checked')?.value||''):'',
+    h3:isAmb?(document.querySelector('input[name=h3]:checked')?.value||''):'',
+    konsensus:isAmb?S.konsensus:'', t24:false
+  };
+  recs.push(rec);setR(recs);
+  showToast('✅ T₀ kaydedildi: '+kod);
+  showScreen('home');
+}
+
+// ══════════════════════════════════════════
+// T₂₄
+// ══════════════════════════════════════════
+function showSelectT24(){
+  const w=getR().filter(r=>!r.t24);
+  if(!w.length){showToast('T₂₄ bekleyen hasta yok');return;}
+  startT24(w[0].kod);
+}
+
+function startT24(kod){
+  editKod=kod;
+  document.getElementById('t24-kod-display').textContent=kod;
+  document.getElementById('t24-cikis').selectedIndex=0;
+  document.getElementById('t24-kalis').value='';
+  document.getElementById('cao-result-card').style.display='none';
+  document.getElementById('cao-criteria').innerHTML=CAO.map(c=>togRow('cao',c)).join('');
+  document.getElementById('sens-criteria').innerHTML=SENS.map(c=>togRow('sens',c)).join('');
+  showScreen('t24');
+}
+
+function togRow(pfx,lbl){
+  const id=pfx+lbl.replace(/[^a-zA-Z]/g,'');
+  return `<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px">
+    <span style="font-size:14px;font-weight:600;color:#444;flex:1;padding-right:8px">${lbl}</span>
+    <div class="toggle-row" style="width:160px;flex-shrink:0">
+      <button type="button" class="tog off" id="${id}-h" onclick="togT24('${id}','Hayır')">Hayır</button>
+      <button type="button" class="tog"     id="${id}-e" onclick="togT24('${id}','Evet')">Evet</button>
+    </div>
+  </div>`;
+}
+
+function togT24(id,val){
+  const h=document.getElementById(id+'-h');
+  const e=document.getElementById(id+'-e');
+  if(val==='Hayır'){h.className='tog off';e.className='tog';}
+  else{h.className='tog';e.className='tog on-red';}
+  updateCAO();
+}
+
+function updateCAO(){
+  const anyEvet=CAO.some(c=>{
+    const e=document.getElementById('cao'+c.replace(/[^a-zA-Z]/g,'')+'-e');
+    return e&&e.classList.contains('on-red');
+  });
+  const card=document.getElementById('cao-result-card');
+  const txt=document.getElementById('cao-result-txt');
+  const htxt=document.getElementById('triaj-hata-txt');
+  card.style.display='block';
+  txt.textContent=anyEvet?'⚠️ CAO = EVET':'✅ CAO = HAYIR';
+  txt.style.color=anyEvet?'#CC0000':'var(--green)';
+  card.style.background=anyEvet?'#FFD0D0':'var(--green-light)';
+  const r=getR().find(x=>x.kod===editKod);
+  if(r){
+    const ref=r.kohort==='Ayaktan'?r.his:r.konsensus;
+    const cao=anyEvet?'Evet':'Hayır';
+    let h='';
+    if(ref&&!['Kırmızı (protokol)','Anlaşmazlık',''].includes(ref)){
+      if(ref!=='Kırmızı'&&cao==='Evet')h='→ Yetersiz Triaj';
+      else if(ref==='Kırmızı'&&cao==='Hayır')h='→ Aşırı Triaj';
+      else h='→ Doğru Triaj';
+    }
+    htxt.textContent=h;
+  }
+}
+
+function saveT24(){
+  const recs=getR();
+  const idx=recs.findIndex(r=>r.kod===editKod);
+  if(idx<0){showToast('Kayıt bulunamadı');return;}
+  const d={cikis:document.getElementById('t24-cikis').value,
+           kalis:document.getElementById('t24-kalis').value};
+  CAO.forEach(c=>{
+    const id='cao'+c.replace(/[^a-zA-Z]/g,'');
+    d['cao_'+c]=document.getElementById(id+'-e')?.classList.contains('on-red')?'Evet':'Hayır';
+  });
+  SENS.forEach(c=>{
+    const id='sens'+c.replace(/[^a-zA-Z]/g,'');
+    d['sens_'+c]=document.getElementById(id+'-e')?.classList.contains('on-red')?'Evet':'Hayır';
+  });
+  d.cao=CAO.some(c=>d['cao_'+c]==='Evet')?'Evet':'Hayır';
+  const r=recs[idx];
+  const ref=r.kohort==='Ayaktan'?r.his:r.konsensus;
+  if(ref&&!['Kırmızı (protokol)','Anlaşmazlık',''].includes(ref)){
+    if(ref!=='Kırmızı'&&d.cao==='Evet')d.hata='Yetersiz Triaj';
+    else if(ref==='Kırmızı'&&d.cao==='Hayır')d.hata='Aşırı Triaj';
+    else d.hata='Doğru';
+  }
+  d.t24=true;
+  Object.assign(recs[idx],d);
+  setR(recs);
+  showToast('✅ T₂₄ kaydedildi: '+editKod);
+  showScreen('home');
+}
+
+// ══════════════════════════════════════════
+// CSV EXPORT
+// ══════════════════════════════════════════
+function exportCSV(){
+  const recs=getR();
+  if(!recs.length){showToast('Dışa aktarılacak veri yok');return;}
+  const H=['Hasta Kodu','Tarih','Saat','Kohort','Yaş','Cinsiyet','Şikayet 1','Şikayet 2','Komorbidite',
+    'Nabız','Solunum Hz','SpO2','Sistolik KB','Diyastolik KB','Ateş','GKS','AVPU','Ek O2',
+    'NEWS2','Re-triaj','ESI','Hemşire HIS','Hemşire 1','Hemşire 2','Hemşire 3','Konsensüs',
+    'Çıkış Yeri','AS Kalış (dk)',...CAO.map(c=>'CAO:'+c),'CAO',
+    ...SENS.map(c=>'Duy:'+c),'Triaj Hatası'];
+  const rows=recs.map(r=>[
+    r.kod,r.tarih,r.saat,r.kohort,r.yas||'',r.cinsiyet||'',r.sik1,r.sik2,r.komor,
+    r.nabiz,r.solhz,r.spo2,r.kbs,r.kbd,r.ates,r.gks,r.avpu,r.eko2,
+    r.news2,r.retriaj,r.esi,r.his,r.h1,r.h2,r.h3,r.konsensus,
+    r.cikis||'',r.kalis||'',...CAO.map(c=>r['cao_'+c]||''),r.cao||'',
+    ...SENS.map(c=>r['sens_'+c]||''),r.hata||''
+  ].map(v=>`"${(v||'').toString().replace(/"/g,'""')}"`));
+  const csv=[H.map(h=>`"${h}"`).join(','),...rows.map(r=>r.join(','))].join('\r\n');
+  const blob=new Blob(['﻿'+csv],{type:'text/csv;charset=utf-8;'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url;a.download=`triaj_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+  URL.revokeObjectURL(url);
+  showToast(`📥 ${recs.length} kayıt indirildi`);
+}
+
+// ══════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════
+function openSettings(){showScreen('settings');}
+function loadSettings(){
+  const s=getSet();
+  document.getElementById('set-kod').value=s.startKod||'A4-0001';
+  document.getElementById('set-hedef').value=s.hedef||'1320';
+  document.getElementById('set-tarih').value=s.studyDate||new Date().toISOString().slice(0,10);
+}
+function saveSettings(){
+  const s={startKod:document.getElementById('set-kod').value.trim(),
+    hedef:document.getElementById('set-hedef').value,
+    studyDate:document.getElementById('set-tarih').value};
+  localStorage.setItem('trs',JSON.stringify(s));
+  showToast('✅ Ayarlar kaydedildi');
+  showScreen('home');
+}
+function clearData(){
+  if(!confirm('Tüm veriler silinecek. Emin misiniz?'))return;
+  localStorage.removeItem('tr');
+  showToast('🗑️ Veriler silindi');
+  showScreen('home');
+}
+
+// ══════════════════════════════════════════
+// TOAST
+// ══════════════════════════════════════════
+let toastTimer;
+function showToast(msg){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// init
+renderHome();
+</script>
+</body>
+</html>
